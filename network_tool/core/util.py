@@ -32,7 +32,7 @@ class Mask:
         self.mask = mask
         self.octets = list(map(int, mask.split(".")))
         self.binary = self.to_binary()
-        self.prefix_len = self.prefix()
+        self.prefix_ = self.prefix()
 
     def to_binary(self):
         return ".".join(format(o, "08b") for o in self.octets)
@@ -53,13 +53,10 @@ class Subnet:
     def __init__(self, ip: IPAddress, mask: Mask):
         self.ip = ip
         self.mask = mask
-        self.prefix = mask.prefix_len
+        self.prefix = mask.prefix_
 
         self.network = self.calculate_network()
         self.broadcast = self.calculate_broadcast()
-
-    # def cidr_to_mask_int(self, mask):
-    #     return (0xFFFFFFFF << (32 - mask)) & 0xFFFFFFFF
 
 
 #calculate all
@@ -80,6 +77,8 @@ class Subnet:
         return (2 ** (32 - self.mask)) - 2
 
 
+    # def cidr_to_mask_int(self, mask):
+        #     return (0xFFFFFFFF << (32 - mask)) & 0xFFFFFFFF
 
     def build_output(self):
         return f"""
@@ -87,7 +86,6 @@ IP Address:      {self.ip}
 Mask:            {self.mask} (/ {self.prefix})
 Class:           {self.ip.get_class()}
 Binary Mask:     {self.mask.binary}
-
 Network Adress:         {self.network}
 Broadcast Adress:       {self.broadcast}
 Usable Hosts:  {self.usable_hosts_count()}
